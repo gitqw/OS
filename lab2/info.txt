@@ -1,0 +1,9 @@
+Page memory allocator. Every page(4kB) is devided into blocks of the same size or is a part of a big virtual page. 
+Page is devided into blocks that vary from minimal size (4 or 8 bytes, depends on architecture) to maximal, that
+equals half page capacity (2kB).
+If a page is devided, then it starts with specific header, which points to the first free block of memory and 
+saves size of each block on a page. So, all free blocks in a page a linked together into the list. Used memory
+blocks are controlled by user.
+Also so-called "classes list" is created, where each node is a list of free page headers of the same size. Each time
+new page is created and devided into blocks or is deleted, all changes are saved in the "classes list". This list
+helps to find empty blocks of specific size faster.
