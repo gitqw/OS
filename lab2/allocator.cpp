@@ -36,8 +36,8 @@ void* mem_alloc(size_t size) {
 
 		if (node == NULL) {				// new class addition
 			if (firstClass == NULL) {	// if no class exists, then create it,
-															// add new class Item, which points to a new
-															// page header
+							// add new class Item, which points to a new
+							// page header
 				firstClass = new BlockClassesNode;
 				ClassItem* firstItem = new ClassItem;
 				firstItem->next = NULL;
@@ -48,8 +48,8 @@ void* mem_alloc(size_t size) {
 				firstClass->next = NULL;
 				firstClass->firstItem->firstBlockHeader = (BlockPageHeader*)startAdress;
 				return (void*)((size_t)startAdress + pageHeader_size);
-			} else {										// at least one class exist,
-															// but no class with needed block size
+			} else {						// at least one class exist,
+										// but no class with needed block size
 				node = new BlockClassesNode;
 				ClassItem* firstItem = new ClassItem;
 				firstItem->next = NULL;
