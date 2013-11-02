@@ -63,7 +63,7 @@ void* mem_alloc(size_t size) {
 				return (void*)((size_t)startAdress + pageHeader_size);
 			}
 
-		} else {											// class found
+		} else {							// class found
 			BlockHeader* freeBlock = blockHeader->nextFreeBlock;
 			if (freeBlock == NULL) return NULL;
 			if (freeBlock->nextHeader == NULL) {
@@ -99,7 +99,7 @@ void* mem_alloc(size_t size) {
 			return freeBlock;
 		}
 
-		} else {												// virtual page consists of a few blocks
+		} else {				// virtual page consists of a few blocks
 		size_t pagesNeeded = (size_t)ceil((double)real_size / (double)page_size);
 		int firstFreePage = findPageSequence(pagesNeeded);
 		if (firstFreePage == -1) {
@@ -153,8 +153,12 @@ void mem_free(void* addr) {
 			deleteBlock(pageHeader, addr);
 		} else {
 			bool oneBlockOnPage = false;
-			size_t usedSpace = (size_t)pageHeader->nextFreeBlock - (size_t)pageHeader - pageHeader_size;
-			for (BlockHeader* bHeader = pageHeader->nextFreeBlock; bHeader->nextHeader != NULL; bHeader = bHeader->nextHeader) { 
+			size_t usedSpace = (size_t)pageHeader->nextFreeBlock 
+			                   - (size_t)pageHeader - pageHeader_size;
+			                   
+			for (BlockHeader* bHeader = pageHeader->nextFreeBlock
+			     ; bHeader->nextHeader != NULL
+			     ; bHeader = bHeader->nextHeader) { 
 				usedSpace += (size_t)bHeader->nextHeader - (size_t)bHeader;
 			}
 			if (usedSpace == block_size) oneBlockOnPage = true;
@@ -219,7 +223,9 @@ void deleteBlock(BlockPageHeader* pageHeader, void* addr) {
 }
 
 void* mem_realloc(void* addr, size_t size) {
-	if (addr < memory_start || (size_t)addr > (size_t)memory_start + page_quant*page_size) return NULL;
+	if (addr < memory_start || (size_t)addr > (size_t)memory_start + page_quant*page_size) {
+		return NULL;
+	}
 	size_t real_size = allign_size(size);
 	void* newAddr = mem_alloc(real_size);
 	if (newAddr) { 
@@ -280,7 +286,8 @@ void mem_dump() {
 			bool isDevided = false;
 			for (node = firstClass; node != NULL; node = node->next) {
 				for (ClassItem* item = node->firstItem; item != NULL; item = item->next) { 
-					if ((void*)(item->firstBlockHeader) == pages[i]) { // page consists of blocks
+					// page consists of blocks
+					if ((void*)(item->firstBlockHeader) == pages[i]) { 
 						
 						isDevided = true;
 						break;
