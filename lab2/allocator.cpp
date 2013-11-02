@@ -19,11 +19,11 @@ void* mem_alloc(size_t size) {
 	if (!isMalloced) {
 		isMalloced = true;
 		memory_start = (Page*)malloc(default_buffer_size);
-		if (memory_start == NULL) return NULL;					// can't allocate memory
+		if (memory_start == NULL) return NULL;			// can't allocate memory
 	}
 
-	if (real_size <= page_size/2 - pageHeader_size) {			// page is devided into blocks of the same size
-		BlockPageHeader* blockHeader = NULL;					// block with a free space is available
+	if (real_size <= page_size/2 - pageHeader_size) {// page is devided into blocks of the same size
+		BlockPageHeader* blockHeader = NULL;		// block with a free space is available
 		BlockClassesNode* node;
 		BlockClassesNode* prevNode = NULL;
 		for (node = firstClass; node != NULL; node = node->next) {
@@ -34,8 +34,8 @@ void* mem_alloc(size_t size) {
 			prevNode = node;
 		}
 
-		if (node == NULL) {									// new class addition
-			if (firstClass == NULL) {						// if no class exists, then create it,
+		if (node == NULL) {				// new class addition
+			if (firstClass == NULL) {	// if no class exists, then create it,
 															// add new class Item, which points to a new
 															// page header
 				firstClass = new BlockClassesNode;
@@ -67,7 +67,8 @@ void* mem_alloc(size_t size) {
 			BlockHeader* freeBlock = blockHeader->nextFreeBlock;
 			if (freeBlock == NULL) return NULL;
 			if (freeBlock->nextHeader == NULL) {
-				BlockHeader* temp = (BlockHeader*)((size_t)blockHeader->nextFreeBlock + real_size);
+				BlockHeader* temp = (BlockHeader*)((size_t)blockHeader->nextFreeBlock 
+				+ real_size);
 				blockHeader->nextFreeBlock = temp;
 				temp->nextHeader = NULL;
 			} else {
@@ -122,7 +123,7 @@ void mem_free(void* addr) {
 	// page is a block page only if adress points not to the start of a new page
 	if (spaceDistance % page_size == 0) isBlockPage = false;
 
-	if (isBlockPage) {							// delete one block from the (pageIndex+1)-th page
+	if (isBlockPage) {			// delete one block from the (pageIndex+1)-th page
 		BlockPageHeader* pageHeader = (BlockPageHeader*) pages[pageIndex];
 		size_t block_size = pageHeader->block_size;
 		BlockClassesNode* classNode;				// classNode
@@ -143,7 +144,7 @@ void mem_free(void* addr) {
 			newClassItem->firstBlockHeader = pageHeader;
 			newClassItem->next = NULL;
 			newClassNode->firstItem = newClassItem;
-			if (firstClass == NULL) {				// no classes exist
+			if (firstClass == NULL) {			// no classes exist
 				firstClass = newClassNode;
 			} else { 
 				prevClassNode->next = newClassNode;
@@ -157,8 +158,8 @@ void mem_free(void* addr) {
 				usedSpace += (size_t)bHeader->nextHeader - (size_t)bHeader;
 			}
 			if (usedSpace == block_size) oneBlockOnPage = true;
-			if (oneBlockOnPage) {					// only one block in the page
-				pages[pageIndex] = NULL;			// mark the page as free
+			if (oneBlockOnPage) {			// only one block in the page
+				pages[pageIndex] = NULL;	// mark the page as free
 				ClassItem* curClassItem;
 				ClassItem* prevClassItem = NULL;
 				// seek for a class item, the block belongs to
@@ -172,7 +173,7 @@ void mem_free(void* addr) {
 				// delete class item of the block
 				if (prevClassItem) prevClassItem->next = curClassItem->next;
 				else {
-					classNode->firstItem = NULL;			// class has no items
+					classNode->firstItem = NULL;	// class has no items
 					// at least two classes exist
 					if (prevClassNode) prevClassNode->next = classNode->next;
 					// only one class exists
@@ -184,7 +185,7 @@ void mem_free(void* addr) {
 			}
 		}
 
-	} else {										// delete all pages, given to user as one virtual page
+	} else {				// delete all pages, given to user as one virtual page
 		for (int i = pageIndex + 1; i < page_quant && pages[pageIndex] == pages[i]; i++) { 
 			pages[i] = NULL;
 		}
@@ -237,7 +238,7 @@ int findPageSequence(size_t pagesNeeded) {
 		if (freeCounter == pagesNeeded) break;
 		if (pages[i] == NULL) {				// page is free
 			freeCounter++;				
-		} else {							// page is full or used
+		} else {					// page is full or used
 			freeCounter = 0;
 			firstFreePageInd = i + 1;
 		}
@@ -251,12 +252,12 @@ int findPageSequence(size_t pagesNeeded) {
 }
 
 void* createBlockPage(size_t block_size) {
-	int freePageIndex = findPageSequence(1);					// seek for 1 free page
+	int freePageIndex = findPageSequence(1);		// seek for 1 free page
 	if (freePageIndex == -1) return NULL;
 
 	// calculate adress of a new page
 	void *startAdress = (void*)((size_t)memory_start + freePageIndex*page_size);
-	pages[freePageIndex] = (Page*)startAdress;					// mark page as used
+	pages[freePageIndex] = (Page*)startAdress;		// mark page as used
 
 	// operations with page header
 	BlockPageHeader* pageHeader = (BlockPageHeader*)startAdress;
@@ -279,7 +280,7 @@ void mem_dump() {
 			bool isDevided = false;
 			for (node = firstClass; node != NULL; node = node->next) {
 				for (ClassItem* item = node->firstItem; item != NULL; item = item->next) { 
-					if ((void*)(item->firstBlockHeader) == pages[i]) { 		// page consists of blocks
+					if ((void*)(item->firstBlockHeader) == pages[i]) { // page consists of blocks
 						
 						isDevided = true;
 						break;
