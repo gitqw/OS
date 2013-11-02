@@ -1,4 +1,4 @@
 OS
 ==
 
-Laboratory works in discipline Operating Systems.
+Laboratory works in Operating Systems discipline.
