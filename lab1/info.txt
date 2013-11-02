@@ -1,1 +1,2 @@
-Allocator that works on first fit strategy. May be unsafe. Instead use standart C library functions. All used memory blocks are linked together and form the list, where headers of each block linked together.
+Allocator that works on first fit strategy. May be unsafe. Instead use standart C library functions. 
+All used memory blocks are linked together and form the list, where headers of each block linked together.
